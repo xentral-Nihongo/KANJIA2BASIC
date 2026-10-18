@@ -1,0 +1,1838 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JFT A2 — Kuis Kanji 6 Part</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f2ede0;
+        --paper-line: #c9beaa;
+        --ink: #22201b;
+        --ink-soft: #5a5348;
+        --hanko: #a8402f;
+        --hanko-soft: #c76a54;
+        --indigo: #2f4858;
+        --ok: #3c7a5e;
+        --card: #fbf9f3;
+        --skip: #8a7238;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background:
+          radial-gradient(
+            circle at 15% 20%,
+            rgba(168, 64, 47, 0.04),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 80%,
+            rgba(47, 72, 88, 0.05),
+            transparent 45%
+          ),
+          var(--paper);
+        color: var(--ink);
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 16px 60px;
+      }
+      header {
+        width: 100%;
+        max-width: 600px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--paper-line);
+        padding-bottom: 16px;
+      }
+      header h1 {
+        font-family: "Shippori Mincho", serif;
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0 0 6px;
+      }
+      header h1 span {
+        color: var(--hanko);
+      }
+      header p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        max-width: 58ch;
+      }
+
+      .group-bar {
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .group-btn {
+        padding: 10px 14px;
+        border: 1px solid var(--ink);
+        background: #fff;
+        color: var(--ink);
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        font-size: 13.5px;
+        cursor: pointer;
+      }
+      .group-btn:hover {
+        background: #efe9da;
+      }
+      .group-btn.active {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .navgrid-wrap {
+        width: 100%;
+        max-width: 600px;
+        border: 1px solid var(--paper-line);
+        background: var(--card);
+        padding: 12px;
+        margin-bottom: 16px;
+        max-height: 190px;
+        overflow-y: auto;
+        display: none;
+      }
+      .navgrid-title {
+        font-size: 11px;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
+        letter-spacing: 0.04em;
+        line-height: 1.5;
+      }
+      .navgrid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .navtile {
+        padding: 5px 8px;
+        font-size: 13px;
+        border: 1px solid var(--paper-line);
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+        font-family: "Noto Serif JP", serif;
+        transition: background 0.1s ease;
+      }
+      .navtile:hover {
+        border-color: var(--ink);
+      }
+      .navtile.correct {
+        background: #e7f2ec;
+        border-color: var(--ok);
+        color: var(--ok);
+      }
+      .navtile.wrong {
+        background: #f7e9e6;
+        border-color: var(--hanko);
+        color: var(--hanko);
+      }
+      .navtile.skipped {
+        background: #f3ecd9;
+        border-color: var(--skip);
+        color: var(--skip);
+      }
+      .navtile.viewing {
+        outline: 2px solid var(--indigo);
+        outline-offset: 1px;
+      }
+
+      main {
+        width: 100%;
+        max-width: 600px;
+      }
+      .stage {
+        background: var(--card);
+        border: 1px solid var(--paper-line);
+        padding: 26px 22px 22px;
+        position: relative;
+        min-height: 120px;
+      }
+      .empty-state {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 14px;
+        padding: 34px 10px;
+        line-height: 1.7;
+      }
+
+      .stage-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+      }
+      #orderToggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border: 1px solid var(--ink-soft);
+        background: #fff;
+        color: var(--ink);
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        font-size: 12.5px;
+        cursor: pointer;
+      }
+      #orderToggle:hover {
+        border-color: var(--ink);
+        background: #efe9da;
+      }
+
+      .progressbar {
+        height: 2px;
+        background: var(--paper-line);
+        width: 100%;
+        margin-bottom: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+      .progressbar i {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: var(--hanko-soft);
+        width: 0%;
+        transition: width 0.25s ease;
+      }
+
+      .cell {
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 22px;
+        border: 1.5px solid var(--ink);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          linear-gradient(
+            to right,
+            transparent calc(50% - 0.5px),
+            rgba(34, 32, 27, 0.18) calc(50% - 0.5px),
+            rgba(34, 32, 27, 0.18) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+          ),
+          linear-gradient(
+            to bottom,
+            transparent calc(50% - 0.5px),
+            rgba(34, 32, 27, 0.18) calc(50% - 0.5px),
+            rgba(34, 32, 27, 0.18) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+          );
+      }
+      .cell span {
+        font-family: "Noto Serif JP", serif;
+        font-weight: 600;
+        font-size: 48px;
+        line-height: 1;
+        color: var(--ink);
+        user-select: none;
+      }
+      .cell.short span {
+        font-size: 32px;
+      }
+
+      .question-label {
+        text-align: center;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        margin: -8px 0 16px;
+        letter-spacing: 0.05em;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .opt {
+        padding: 14px 12px;
+        border: 1px solid var(--ink-soft);
+        background: #fff;
+        color: var(--ink);
+        text-align: left;
+        font-size: 15px;
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        cursor: pointer;
+        transition:
+          background 0.12s ease,
+          border-color 0.12s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .opt .num {
+        font-size: 11px;
+        color: var(--ink-soft);
+        border: 1px solid var(--paper-line);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .opt:hover:not(.locked) {
+        background: #efe9da;
+      }
+      .opt.locked {
+        cursor: default;
+      }
+      .opt.correct {
+        border-color: var(--ok);
+        background: #e7f2ec;
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .opt.wrong {
+        border-color: var(--hanko);
+        background: #f7e9e6;
+        color: var(--hanko);
+        font-weight: 700;
+      }
+      .opt.dim {
+        opacity: 0.5;
+      }
+      .opt:focus-visible {
+        outline: 2px solid var(--indigo);
+        outline-offset: 2px;
+      }
+
+      .rowbtns {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button.plain {
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        font-size: 14px;
+        padding: 9px 14px;
+        border: 1px solid var(--ink);
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      button.plain:hover {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .ghost {
+        border-color: transparent;
+        color: var(--ink-soft);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        padding: 8px 2px;
+        background: none;
+        cursor: pointer;
+        font-family: "Zen Kaku Gothic New", sans-serif;
+        font-size: 14px;
+      }
+      .ghost:hover {
+        background: transparent;
+        color: var(--hanko);
+      }
+      #nextBtn {
+        background: var(--hanko);
+        border-color: var(--hanko);
+        color: #fdf8f1;
+        display: none;
+      }
+      #nextBtn:hover {
+        background: #8c3225;
+        border-color: #8c3225;
+      }
+
+      .explain {
+        display: none;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px dashed var(--paper-line);
+        animation: reveal 0.22s ease;
+      }
+      .explain.show {
+        display: block;
+      }
+      @keyframes reveal {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .verdict {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .stamp {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        font-weight: 700;
+        border: 2px solid;
+        margin-top: 1px;
+      }
+      .stamp.ok {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+      .stamp.no {
+        color: var(--hanko);
+        border-color: var(--hanko);
+      }
+      .stamp.sk {
+        color: var(--skip);
+        border-color: var(--skip);
+      }
+      .verdict-text {
+        font-size: 14.5px;
+        line-height: 1.6;
+      }
+      .verdict-text b {
+        font-family: "Noto Serif JP", serif;
+        font-size: 17px;
+      }
+
+      footer {
+        width: 100%;
+        max-width: 600px;
+        margin-top: 18px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      footer .stat b {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .round-toast {
+        max-width: 600px;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 12.5px;
+        color: var(--indigo);
+        text-align: center;
+        display: none;
+      }
+      .round-toast.show {
+        display: block;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .explain {
+          animation: none;
+        }
+        .progressbar i {
+          transition: none;
+        }
+      }
+      @media (max-width: 480px) {
+        .options {
+          grid-template-columns: 1fr;
+        }
+        .cell {
+          width: 110px;
+          height: 110px;
+        }
+        .cell span {
+          font-size: 34px;
+        }
+        header h1 {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ================= TEMPEL HTML POP-UP DI SINI (TEPAT DI BAWAH <body>) ================= -->
+    <div
+      id="customPopup"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(34, 32, 27, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      "
+    >
+      <div
+        style="
+          background: #fbf9f3;
+          border: 1.5px solid #22201b;
+          padding: 28px 24px;
+          max-width: 380px;
+          width: 100%;
+          text-align: center;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          animation: popupFadeIn 0.25s ease;
+        "
+      >
+        <h3
+          style="
+            font-family: &quot;Shippori Mincho&quot;, serif;
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0 0 10px;
+            color: #22201b;
+          "
+        >
+          Jangan Lupa Follow! 👋
+        </h3>
+        <p
+          style="
+            font-size: 14px;
+            color: #5a5348;
+            line-height: 1.6;
+            margin: 0 0 20px;
+          "
+        >
+          Dukung terus pembuat kuis ini dengan mengikuti Instagram
+          <b style="color: #a8402f">@xnpall.xd</b> ya!
+        </p>
+        <button
+          type="button"
+          id="closePopupBtn"
+          style="
+            width: 100%;
+            padding: 11px;
+            background: #a8402f;
+            border: 1px solid #a8402f;
+            color: #fdf8f1;
+            font-family: &quot;Zen Kaku Gothic New&quot;, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 700;
+          "
+        >
+          Siap, Mengerti!
+        </button>
+      </div>
+    </div>
+
+    <header>
+      <h1>JFT A2 <span>+ Irodori 2</span> — Kuis Kanji 6 Part</h1>
+      <p>
+        613 kosakata dari daftar "KANJI JFT A2 — Tambahan Kanji Irodori 2",
+        dibagi 6 part sesuai urutan aslinya. Kanji yang di daftar sumbernya
+        memang dipisah jadi dua bentuk (kayak 水 vs 水曜日, 木 vs 木曜日) tetap
+        jadi dua soal beda, bukan digabung. Pilihan jawabannya sengaja dibuat
+        mirip awalan/akhirannya biar nggak bisa ditebak dari situ doang.
+      </p>
+    </header>
+
+    <div class="group-bar" id="groupBar"></div>
+
+    <div class="navgrid-wrap" id="navWrap">
+      <div class="navgrid-title">
+        Daftar soal di part ini — klik buat buka lagi (hijau = benar, merah =
+        salah, kuning = dilewati)
+      </div>
+      <div class="navgrid" id="navGrid"></div>
+    </div>
+
+    <main>
+      <div class="stage" id="stage">
+        <div class="empty-state" id="emptyState">
+          👆 Pilih salah satu part di atas dulu untuk mulai kuisnya.
+        </div>
+
+        <div id="quizBody" style="display: none">
+          <div class="stage-toolbar">
+            <button type="button" id="orderToggle">
+              <span class="icon">🔀</span
+              ><span id="orderToggleLabel">Acak</span>
+            </button>
+          </div>
+          <div class="progressbar"><i id="progressFill"></i></div>
+          <div class="cell" id="cell"><span id="kanjiText">私</span></div>
+          <div class="question-label" id="questionLabel">
+            Bacaannya yang mana?
+          </div>
+
+          <div class="options" id="options"></div>
+
+          <div class="rowbtns">
+            <button type="button" id="skipBtn" class="ghost">
+              Nggak tahu, lihat jawaban
+            </button>
+            <button type="button" id="nextBtn" class="plain">Lanjut →</button>
+            <button type="button" id="resetBtn" class="ghost">
+              Ulang dari awal
+            </button>
+          </div>
+
+          <div class="explain" id="explain">
+            <div class="verdict">
+              <div class="stamp" id="stamp">✓</div>
+              <div class="verdict-text" id="verdictText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <span class="stat">Benar: <b id="scoreOk">0</b></span>
+        <span class="stat">Salah: <b id="scoreNo">0</b></span>
+        <span class="stat"
+          >Terjawab: <b id="posNum">0</b> dari <b id="totalNum">0</b></span
+        >
+        <span class="stat">Putaran: <b id="roundNum">1</b></span>
+      </footer>
+      <div class="round-toast" id="roundToast">
+        🎉 Satu putaran penuh selesai! Lanjut, soal diacak ulang.
+      </div>
+    </main>
+
+    <script>
+      /* ================= DATA: [kanji, bacaan, arti] — nomor 1-613 sesuai PDF sumber ================= */
+      const RAW = [
+        ["魚", "さかな", "Ikan"],
+        ["肉", "にく", "Daging"],
+        ["卵", "たまご", "Telur"],
+        ["水", "みず", "Air"],
+        ["食べます", "たべます", "Makan"],
+        ["飲みます", "のみます", "Minum"],
+        ["大きい", "おおきい", "Besar"],
+        ["小さい", "ちいさい", "Kecil"],
+        ["新しい", "あたらしい", "Baru"],
+        ["古い", "ふるい", "Lama, usang"],
+        ["～時", "～じ", "~ jam"],
+        ["～分", "～ふん|ぷん|ぶん", "~ menit"],
+        ["～半", "～はん", "~ setengah"],
+        ["月曜日", "げつようび", "Senin"],
+        ["火曜日", "かようび", "Selasa"],
+        ["水曜日", "すいようび", "Rabu"],
+        ["木曜日", "もくようび", "Kamis"],
+        ["金曜日", "きんようび", "Jumat"],
+        ["土曜日", "どようび", "Sabtu"],
+        ["日曜日", "にちようび", "Minggu"],
+        ["言います", "いいます", "Berkata"],
+        ["話します", "はなします", "Berbicara"],
+        ["読みます", "よみます", "Membaca"],
+        ["見ます", "みます", "Melihat"],
+        ["聞きます", "ききます", "Mendengarkan"],
+        ["書きます", "かきます", "Menulis"],
+        ["一", "いち", "Satu"],
+        ["二", "に", "Dua"],
+        ["三", "さん", "Tiga"],
+        ["四", "よん|し", "Empat"],
+        ["五", "ご", "Lima"],
+        ["六", "ろく", "Enam"],
+        ["七", "なな|しち", "Tujuh"],
+        ["八", "はち", "Delapan"],
+        ["九", "きゅう", "Sembilan"],
+        ["十", "じゅう", "Sepuluh"],
+        ["～年", "～ねん", "~ tahun"],
+        ["～月", "～がつ", "~ bulan"],
+        ["～日", "～にち", "~ tanggal"],
+        ["東", "ひがし", "Timur"],
+        ["西", "にし", "Barat"],
+        ["南", "みなみ", "Selatan"],
+        ["北", "きた", "Utara"],
+        ["～口", "～ぐち", "~ pintu"],
+        ["東口", "ひがしぐち", "Pintu timur"],
+        ["西口", "にしぐち", "Pintu barat"],
+        ["南口", "みなみぐち", "Pintu selatan"],
+        ["北口", "きたぐち", "Pintu utara"],
+        ["買います", "かいます", "Membeli"],
+        ["買い物", "かいもの", "Belanja"],
+        ["お金", "おかね", "Uang"],
+        ["～円", "～えん", "~ yen"],
+        ["百", "ひゃく", "100"],
+        ["千", "せん", "1000"],
+        ["万", "まん", "10000"],
+        ["百円", "ひゃくえん", "100 yen"],
+        ["千円", "せんえん", "1000 yen"],
+        ["一万円", "いちまんえん", "10000 yen"],
+        ["行きます", "いきます", "Pergi"],
+        ["来ます", "きます", "Datang"],
+        ["会います", "あいます", "Bertemu"],
+        ["休みます", "やすみます", "Libur, istirahat"],
+        ["日本", "にほん", "Jepang"],
+        ["東京", "とうきょう", "Tokyo"],
+        ["私", "わたし", "Saya"],
+        ["父", "ちち", "Ayah"],
+        ["母", "はは", "Ibu"],
+        ["子供", "こども", "Anak"],
+        ["男", "おとこ", "Laki-laki"],
+        ["女", "おんな", "Perempuan"],
+        ["人", "ひと", "Orang"],
+        ["お父さん", "おとうさん", "Ayah (orang lain)"],
+        ["お母さん", "おかあさん", "Ibu (orang lain)"],
+        ["何人", "なんにん", "Berapa orang?"],
+        ["国", "くに", "Negara"],
+        ["外国", "がいこく", "Luar negri"],
+        ["～語", "～ご", "~ Bahasa"],
+        ["日本語", "にほんご", "Bahasa jepang"],
+        ["英語", "えいご", "Bahasa inggris"],
+        ["中国語", "ちゅうごくご", "Bahasa china"],
+        ["～人", "～じん|にん", "~ orang"],
+        ["日本人", "にほんじん", "Orang jepang"],
+        ["好き", "すき", "Suka"],
+        ["本", "ほん", "Buku"],
+        ["読書", "どくしょ", "Bacaan"],
+        ["何", "なに", "Apa?"],
+        ["春", "はる", "Musim semi"],
+        ["夏", "なつ", "Musim panas"],
+        ["秋", "あき", "Musim gugur"],
+        ["冬", "ふゆ", "Musim dingin"],
+        ["今", "いま", "Sekarang"],
+        ["花", "はな", "Bunga"],
+        ["海", "うみ", "Laut"],
+        ["山", "やま", "Gunung"],
+        ["川", "かわ", "Sungai"],
+        ["今日", "きょう", "Hari ini"],
+        ["天気", "てんき", "Cuaca"],
+        ["晴れ", "はれ", "Cerah"],
+        ["雨", "あめ", "Hujan"],
+        ["雪", "ゆき", "Salju"],
+        ["雲", "くも", "Mendung"],
+        ["風", "かぜ", "Angin"],
+        ["空", "そら", "Langit"],
+        ["町", "まち", "Kota"],
+        ["店", "みせ", "Toko"],
+        ["人気", "にんき", "Popularitas, ketenaran"],
+        ["多い", "おおい", "Banyak"],
+        ["少ない", "すくない", "Sedikit"],
+        ["高い", "たかい", "Mahal"],
+        ["安い", "やすい", "Murah"],
+        ["広い", "ひろい", "Luas"],
+        ["道", "みち", "Jalan"],
+        ["通り", "とおり", "Jalan"],
+        ["右", "みぎ", "Kanan"],
+        ["左", "ひだり", "Kiri"],
+        ["一つ", "ひとつ", "Satu buah"],
+        ["二つ", "ふたつ", "Dua buah"],
+        ["赤い", "あかい", "Merah"],
+        ["青い", "あおい", "Biru"],
+        ["黒い", "くろい", "Hitam"],
+        ["白い", "しろい", "Putih"],
+        ["時間", "じかん", "Waktu"],
+        ["場所", "ばしょ", "Tempat"],
+        ["駅", "えき", "Stasiun"],
+        ["日", "ひ", "Matahari"],
+        ["出かけます", "でかけます", "Meninggalkan rumah"],
+        ["待ちます", "まちます", "Menunggu"],
+        ["止まります", "とまります", "Berhenti"],
+        ["食事", "しょくじ", "Makan bersama"],
+        ["仕事", "しごと", "Pekerjaan"],
+        ["前", "まえ", "Sebelum"],
+        ["後", "あと", "Setelah"],
+        ["朝", "あさ", "Pagi"],
+        ["昼", "ひる", "Siang"],
+        ["夜", "よる", "Malam"],
+        ["乗ります", "のります", "Naik"],
+        ["学校", "がっこう", "Sekolahan"],
+        ["小学校", "しょうがっこう", "SD"],
+        ["中学校", "ちゅうがっこう", "SMP"],
+        ["高校", "こうこう", "SMA"],
+        ["大学", "だいがく", "Universitas"],
+        ["先生", "せんせい", "Guru"],
+        ["学生", "がくせい", "Murid, siswa"],
+        ["～年生", "～ねんせい", "Kelas ~"],
+        ["勉強", "べんきょう", "Pelajaran"],
+        ["文化", "ぶんか", "Kebudayaan"],
+        ["音楽", "おんがく", "Musik"],
+        ["旅行", "りょこう", "Wisata"],
+        ["留学", "りゅうがく", "Belajar di luar negri"],
+        ["友達", "ともだち", "Teman"],
+        ["楽しい", "たのしい", "Gembira"],
+        ["週", "しゅう", "Minggu"],
+        ["～回", "～かい", "~ kali"],
+        ["食べ物", "たべもの", "Makanan"],
+        ["飲物", "のみもの", "Minuman"],
+        ["お茶", "おちゃ", "Teh hijau"],
+        ["お酒", "おさけ", "Sake"],
+        ["作ります", "つくります", "Membuat"],
+        ["持っていきます", "もっていきます", "Membawa pergi"],
+        ["お願いします", "おねがいします", "Tolong"],
+        ["料理", "りょうり", "Masakan"],
+        ["味", "あじ", "Rasa"],
+        ["色", "いろ", "Warna"],
+        ["野菜", "やさい", "Sayuran"],
+        ["少し", "すこし", "Sedikit"],
+        ["中", "なか", "Dalam"],
+        ["入っています", "はいっています", "Masuk"],
+        ["会社", "かいしゃ", "Perusahaan"],
+        ["本社", "ほんしゃ", "Kantor pusat"],
+        ["支社", "ししゃ", "Kantor cabang"],
+        ["出張", "しゅっちょう", "Dinas luar kota"],
+        ["空港", "くうこう", "Bandara"],
+        ["出発", "しゅっぱつ", "Keberangkatan"],
+        ["到着", "とうちゃく", "Kedatangan"],
+        ["午前", "ごぜん", "AM"],
+        ["午後", "ごご", "PM"],
+        ["自分", "じぶん", "Sendiri"],
+        ["電話", "でんわ", "Telepon"],
+        ["電気", "でんき", "Listrik"],
+        ["電車", "でんしゃ", "Kereta"],
+        ["車", "くるま", "Mobil"],
+        ["送ります", "おくります", "Mengirim"],
+        ["使います", "つかいます", "Menggunakan"],
+        ["借ります", "かります", "Meminjam"],
+        ["体", "からだ", "Badan"],
+        ["頭", "あたま", "Kepala"],
+        ["目", "め", "Mata"],
+        ["口", "くち", "Mulut"],
+        ["耳", "みみ", "Telinga"],
+        ["手", "て", "Tangan"],
+        ["足", "あし", "Kaki"],
+        ["上", "うえ", "Atas"],
+        ["下", "した", "Bawah"],
+        ["毎～", "まい～", "~ setiap"],
+        ["毎朝", "まいあさ", "setiap pagi"],
+        ["毎日", "まいにち", "Setiap hari"],
+        ["週末", "しゅうまつ", "Akhir pekan"],
+        ["元気", "げんき", "Sehat"],
+        ["外", "そと", "Luar"],
+        ["起きます", "おきます", "Bangun tidur"],
+        ["歩きます", "あるきます", "Berjalan"],
+        ["走ります", "はしります", "Berlari"],
+        ["泳ぎます", "およぎます", "Berenang"],
+        ["お祝い", "おいわい", "Perayaan"],
+        ["誕生日", "たんじょうび", "Ulang tahun"],
+        ["結婚", "けっこん", "Pernikahan"],
+        ["絵", "え", "Gambar, lukisan"],
+        ["写真", "しゃしん", "Foto"],
+        ["時計", "とけい", "Jam"],
+        ["着ます", "きます", "Memakai pakaian"],
+        ["先～", "せん～", "~ lalu"],
+        ["先週", "せんしゅう", "Minggu lalu"],
+        ["今月", "こんげつ", "Bulan ini"],
+        ["来年", "らいねん", "Tahun depan"],
+        ["今年", "ことし", "Tahun ini"],
+        ["去年", "きょねん", "Tahun lalu"],
+        ["家", "いえ", "Rumah"],
+        ["思います", "おもいます", "Mengira"],
+        ["自己紹介", "じこしょうかい", "Perkenalan"],
+        ["名前", "なまえ", "Nama"],
+        ["意味", "いみ", "Arti"],
+        ["本屋", "ほんや", "Toko buku"],
+        ["近く", "ちかく", "Dekat"],
+        ["住みます", "すみます", "Tinggal"],
+        ["働きます", "はたらきます", "Bekerja"],
+        ["～番目", "～ばんめ", "Urutan yang ~"],
+        ["兄", "あに", "Kakak laki2 (sendiri)"],
+        ["お兄さん", "おにいさん", "Kakak laki2 (orang lain)"],
+        ["姉", "あね", "Kakak perempuan (sendiri)"],
+        ["お姉さん", "おねえさん", "Kakak perempuan (orang lain)"],
+        ["弟", "おとうと", "Adik laki2 (sendiri)"],
+        ["妹", "いもうと", "Adik perempuan (sendiri)"],
+        ["家族", "かぞく", "Keluarga"],
+        ["長い", "ながい", "Panjang"],
+        ["短い", "みじかい", "Pendek"],
+        ["低い", "ひくい", "Rendah"],
+        ["上手", "じょうず", "Pandai"],
+        ["歌", "うた", "Lagu"],
+        ["歌います", "うたいます", "Menyanyi"],
+        ["客", "きゃく", "Tamu"],
+        ["注文", "ちゅうもん", "Pesanan"],
+        ["洋食", "ようしょく", "Makanan barat"],
+        ["和食", "わしょく", "Makanan jepang"],
+        ["牛肉", "ぎゅうにく", "Daging sapi"],
+        ["地方", "ちほう", "Daerah, wilayah"],
+        ["有名", "ゆうめい", "Terkenal"],
+        ["生", "なま", "Mentah"],
+        ["冷たい", "つめたい", "Dingin (benda)"],
+        ["ご飯", "ごはん", "Nasi"],
+        ["塩", "しお", "Garam"],
+        ["全部", "ぜんぶ", "Semua"],
+        ["～方", "～かた", "Cara ~"],
+        ["食べ方", "たべかた", "Cara makan"],
+        ["熱い", "あつい", "Panas"],
+        ["苦手", "にがて", "Susah, berat, tidak begitu suka"],
+        ["入れます", "いれます", "Memasukkan"],
+        ["木", "き", "Pohon"],
+        ["森", "もり", "Hutan"],
+        ["島", "しま", "Pulau"],
+        ["自然", "しぜん", "Alam"],
+        ["船", "ふね", "Kapal"],
+        ["暑い", "あつい", "Panas"],
+        ["帰ります", "かえります", "Pulang"],
+        ["予約します", "よやくします", "Memesan"],
+        ["運転します", "うんてんします", "Menyetir"],
+        ["～中", "～ちゅう|じゅう", "Sedang/dalam ~"],
+        ["旅行中", "りょこうちゅう", "Sedang wisata"],
+        ["観光地", "かんこうち", "Tempat wisata"],
+        ["女性", "じょせい", "Wanita"],
+        ["男性", "だんせい", "Pria"],
+        ["動物", "どうぶつ", "Hewan"],
+        ["空気", "くうき", "Udara"],
+        ["料金", "りょうきん", "Biaya / tarif"],
+        ["無料", "むりょう", "Gratis"],
+        ["明るい", "あかるい", "Terang"],
+        ["便利", "べんり", "Praktis"],
+        ["一年中", "いちねんじゅう", "Dalam satu tahun"],
+        ["受付", "うけつけ", "Penerima tamu"],
+        ["広場", "ひろば", "Lapangan"],
+        ["問題", "もんだい", "Soal, masalah"],
+        ["同じ", "おなじ", "Sama"],
+        ["集まります", "あつまります", "Berkumpul"],
+        ["始まります", "はじまります", "Mulai"],
+        ["終わります", "おわります", "Selesai"],
+        ["中止します", "ちゅうしします", "Mengurungkan, membatalkan"],
+        ["教えます", "おしえます", "Memberitahu"],
+        ["祭り", "まつり", "Perayaan"],
+        ["日本祭り", "にほんまつり", "Perayaan jepang"],
+        ["会場", "かいじょう", "Ruang pertemuan"],
+        ["入場料", "にゅうじょうりょう", "Tarif masuk"],
+        ["参加者", "さんかしゃ", "Peserta"],
+        ["急ぎます", "いそぎます", "Buru-buru"],
+        ["決めます", "きめます", "Menentukan"],
+        ["知ります", "しります", "Kenal, tahu"],
+        ["正月", "しょうがつ", "Tahun baru"],
+        ["年末", "ねんまつ", "Akhir tahun"],
+        ["年始", "ねんし", "Awal tahun"],
+        ["親", "おや", "Orang tua"],
+        ["忙しい", "いそがしい", "Sibuk"],
+        ["特別", "とくべつ", "Istimewa, special"],
+        ["帰国", "きこく", "Pulang ke negara"],
+        ["喜びます", "よろこびます", "Merasa senang/gembira"],
+        ["幸せ", "しあわせ", "Bahagia"],
+        ["成長", "せいちょう", "Pertumbuhan, perkembangan"],
+        ["長生き", "ながいき", "Umur panjang, hidup lama"],
+        ["願い事", "ねがいごと", "Keinginan, kemauan, harapan"],
+        ["合格", "ごうかく", "Lulus"],
+        ["試験", "しけん", "Ujian"],
+        ["大人", "おとな", "Orang Dewasa"],
+        ["～式", "～しき", "Upacara ~ (upacara kedewasaan: 成人式)"],
+        ["～市", "～し", "Kota ~ (kota Saitama: さいたま市)"],
+        ["商品", "しょうひん", "Barang dagangan"],
+        ["電気製品", "でんきせいひん", "Peralatan listrik"],
+        ["電子レンジ", "でんしレンジ", "Oven"],
+        ["～機", "～き", "Mesin ~ (mesin penghisap debu: そうじ機)"],
+        ["店員", "てんいん", "Penjaga toko"],
+        ["調子", "ちょうし", "Keadaan, kondisi"],
+        ["悪い", "わるい", "Jelek"],
+        ["動きます", "うごきます", "Bergerak"],
+        ["考えます", "かんがえます", "Berfikir"],
+        ["音", "おと", "Suara"],
+        ["出ます", "でます", "Keluar"],
+        ["機能", "きのう", "Fungsi"],
+        ["省エネ", "しょうエネ", "Penghematan energy"],
+        ["日本製", "にほんせい", "Produk/buatan jepang"],
+        ["重い", "おもい", "Berat"],
+        ["軽い", "かるい", "Ringan"],
+        ["静か", "しずか", "Tenang"],
+        ["早く", "はやく", "Cepat"],
+        ["方", "ほう", "Arah (arah disini: こっちの方)"],
+        ["洗います", "あらいます", "Mencuci"],
+        ["満足します", "まんぞくします", "Puas, merasa puas"],
+        ["京都", "きょうと", "Kyoto"],
+        ["神社", "じんじゃ", "Kuil sinto"],
+        ["お寺", "おてら", "Kuil"],
+        ["仏教", "ぶっきょう", "Agama budha"],
+        ["歴史", "れきし", "Sejarah"],
+        ["世界", "せかい", "Dunia"],
+        ["中心", "ちゅうしん", "Pusat"],
+        ["～世紀", "～せいき", "Abad ~ (abad 8: 8世紀)"],
+        ["～的", "～てき", "Berbau ~ / ke~an"],
+        ["日本的", "にほんてき", "Berbau jepang"],
+        ["歴史的", "れきしてき", "Bersejarah"],
+        ["飲食", "いんしょく", "Makan minum"],
+        ["禁止", "きんし", "Larangan"],
+        ["説明", "せつめい", "Penjelasan"],
+        ["道具", "どうぐ", "Peralatan"],
+        ["博物館", "はくぶつかん", "Museum"],
+        ["必要", "ひつよう", "Keperluan, kebutuhan"],
+        ["～階", "～かい", "Lantai ~ (lantai 2: 2階)"],
+        ["油", "あぶら", "Minyak, oli"],
+        ["紙", "かみ", "Kertas"],
+        ["温度", "おんど", "Suhu, derajat"],
+        ["活動", "かつどう", "Kegiatan, aktivitas"],
+        ["会議室", "かいぎしつ", "Ruang rapat"],
+        ["寒い", "さむい", "Dingin (suhu)"],
+        ["出します", "だします", "Mengeluarkan, mengirim (surat)"],
+        ["～度", "～ど", "~ derajat (28 derajat)"],
+        ["～点", "～てん", "Nilai ~ (nilai 100)"],
+        ["服", "ふく", "Baju, pakaian"],
+        ["自転車", "じてんしゃ", "Sepeda"],
+        ["自動車", "じどうしゃ", "Mobil"],
+        ["売ります", "うります", "Menjual"],
+        ["貸します", "かします", "Meminjamkan"],
+        ["返します", "かえします", "Mengembalikan"],
+        ["変わります", "かわります", "Mengganti"],
+        ["～用", "～よう", "Urusan, keperluan ~"],
+        ["子供用", "こどもよう", "Urusan anak"],
+        ["人生", "じんせい", "Kehidupan"],
+        ["歌手", "かしゅ", "Penyanyi"],
+        ["選手", "せんしゅ", "Atlit, pemain"],
+        ["画家", "がか", "Pelukis"],
+        ["作家", "さっか", "Pengarang"],
+        ["入学", "にゅうがく", "Masuk sekolah"],
+        ["卒業", "そつぎょう", "Lulus"],
+        ["病気", "びょうき", "Sakit"],
+        ["若い", "わかい", "Muda"],
+        ["生まれます", "うまれます", "Lahir"],
+        ["思い出", "おもいで", "Kenang-kenangan, kenangan"],
+        ["生活", "せいかつ", "Kehidupan"],
+        ["映画", "えいが", "Film"],
+        ["夫", "おっと", "Suami (sendiri)"],
+        ["妻", "つま", "Istri (sendiri)"],
+        ["両親", "りょうしん", "Orang tua"],
+        ["不便", "ふべん", "Tidak praktis"],
+        ["選びます", "えらびます", "Memilih"],
+        ["寝ます", "ねます", "Tidur"],
+        ["サッカー場", "さっかーじょう", "Lapangan sepak bola"],
+        ["試合", "しあい", "Pertandingan"],
+        ["日曜日", "にちようび", "Minggu"],
+        ["強い", "つよい", "Kuat"],
+        ["弱い", "よわい", "Lemah"],
+        ["勝ちます", "かちます", "Menang"],
+        ["負けます", "まけます", "Kalah"],
+        ["～対～", "～たい～", "~ lawan ~ (2 lawan 1)"],
+        ["庭", "にわ", "Halaman"],
+        ["公園", "こうえん", "Taman"],
+        ["病院", "びょういん", "Rumah sakit"],
+        ["交通", "こうつう", "Lalu lintas"],
+        ["通勤", "つうきん", "Perjalanan ke kantor"],
+        ["安全", "あんぜん", "Keselamatan"],
+        ["危ない", "あぶない", "Bahaya"],
+        ["遠い", "とおい", "Jauh"],
+        ["努めます", "つとめます", "Bekerja"],
+        ["～以上", "～いじょう", "~ lebih (2 jam lebih)"],
+        ["～以下", "～いか", "~ kurang (kurang dari 6 man yen)"],
+        ["海外", "かいがい", "Luar negri"],
+        ["食生活", "しょくせいかつ", "Susunan makanan"],
+        ["健康", "けんこう", "Kesehatan"],
+        ["家庭料理", "かていりょうり", "Masakan rumah tangga"],
+        ["材料", "ざいりょう", "Bahan"],
+        ["量", "りょう", "Jumlah, kuantitas, banyaknya"],
+        ["米", "こめ", "Beras"],
+        ["～食", "～しょく", "Makan ~"],
+        ["朝食", "ちょうしょく", "Makan pagi"],
+        ["昼食", "ちゅうしょく", "Makan siang"],
+        ["夕食", "ゆうしょく", "Makan malam"],
+        ["外食", "がいしょく", "Makan di luar"],
+        ["定食", "ていしょく", "Makanan dengan menu tetap"],
+        ["住所", "じゅうしょ", "Alamat"],
+        ["訪問", "ほうもん", "Kunjungan"],
+        ["経験", "けいけん", "Pengalaman"],
+        ["親切", "しんせつ", "Ramah"],
+        ["座ります", "すわります", "Duduk"],
+        ["立ちます", "たちます", "Berdiri"],
+        ["～観", "～かん", "Pandangan ~ (pandangan hidup: 人生観)"],
+        ["約～", "やく～", "Kira-kira, sekitar (sekitar 6 tahun)"],
+        ["計画", "けいかく", "Rencana, program"],
+        ["自信", "じしん", "Percaya diri"],
+        ["方法", "ほうほう", "Cara"],
+        ["目的", "もくてき", "Tujuan"],
+        ["難しい", "むずかしい", "Sulit"],
+        ["通じます", "つうじます", "Mengalirkan, menguasai, berhubungan"],
+        ["習います", "ならいます", "Belajar kepada"],
+        ["学びます", "まなびます", "Belajar"],
+        ["～級", "～きゅう", "Kelas, tingkat ~"],
+        ["初級", "しょきゅう", "Kelas dasar"],
+        ["中級", "ちゅうきゅう", "Kelas menengah"],
+        ["上級", "じょうきゅう", "Kelas atas"],
+        ["相手", "あいて", "Pasangan, lawan"],
+        ["気持ち", "きもち", "Perasaan enak"],
+        ["恋人", "こいびと", "Pacar"],
+        ["出会い", "であい", "Pertemuan"],
+        ["最近", "さいきん", "Akhir-akhir ini"],
+        ["最高", "さいこう", "Teratas, tertinggi"],
+        ["出席", "しゅっせき", "Kehadiran"],
+        ["招待", "しょうたい", "Undangan"],
+        ["～合う", "～あう", "Cocok ~ (kenal-mengenal: 知り合う)"],
+        ["社会人", "しゃかいじん", "Anggota masyarakat"],
+        ["職場", "しょくば", "Tempat kerja"],
+        ["給料", "きゅうりょう", "Gaji"],
+        ["人間関係", "にんげんかんけい", "Hubungan antar manusia"],
+        ["親友", "しんゆう", "Teman karib"],
+        ["恋愛", "れんあい", "Percintaan, asmara"],
+        ["相談", "そうだん", "Musyawarah"],
+        ["心", "こころ", "Hati"],
+        ["心配", "しんぱい", "Khawatir"],
+        ["不安", "ふあん", "Kegelisahan, kekhawatiran"],
+        ["お客様", "おきゃくさま", "Tamu"],
+        ["手続き", "てつづき", "Prosedur"],
+        ["飛行機", "ひこうき", "Pesawat terbang"],
+        ["変更", "へんこう", "Perubahan"],
+        ["予定", "よてい", "Rencana"],
+        ["利用", "りよう", "Penggunaan, pemakaian"],
+        ["忘れ物", "わすれもの", "Benda yang tertinggal"],
+        ["助けます", "たすけます", "Menolong"],
+        ["～航空", "～こうくう", "Penerbangan ~ (penerbangan JF)"],
+        ["～便", "～びん", "Penerbangan, pos (pos 115)"],
+        ["体力", "たいりょく", "Kekuatan"],
+        ["協力", "きょうりょく", "Kerjasama"],
+        ["担当", "たんとう", "Petugas"],
+        ["報告", "ほうこく", "Melapor"],
+        ["連絡", "れんらく", "Menghubungi"],
+        ["募集", "ぼしゅう", "Penerimaan, perekrutan"],
+        ["輸出", "ゆしゅつ", "Ekspor"],
+        ["輸入", "ゆにゅう", "Impor"],
+        ["会話", "かいわ", "Percakapan"],
+        ["形", "かたち", "Bentuk"],
+        ["漢字", "かんじ", "Kanji"],
+        ["答え", "こたえ", "Jawaban"],
+        ["質問", "しつもん", "Pertanyaan"],
+        ["正しい", "ただしい", "Benar"],
+        ["読解", "どっかい", "Bacaan"],
+        ["表現", "ひょうげん", "Pengucapan"],
+        ["文", "ぶん", "Kalimat"],
+        ["文型", "ぶんけい", "Pola kalimat"],
+        ["文法", "ぶんぽう", "Tata Bahasa"],
+        ["もう一度", "もういちど", "Sekali lagi"],
+        ["例", "れい", "Contoh"],
+        ["練習", "れんしゅう", "latihan"],
+        ["～枚", "～まい", "~ lembar"],
+        ["今週", "こんしゅう", "Minggu ini"],
+        ["今度", "こんど", "Lain kali, yang akan datang"],
+        ["横", "よこ", "Sebelah"],
+        ["押します", "おします", "Menekan, mendorong"],
+        ["引きます", "ひきます", "Menarik"],
+        ["温泉", "おんせん", "Pemandian air panas"],
+        ["来週", "らいしゅう", "Minggu depan"],
+        ["犬", "いぬ", "Anjing"],
+        ["夕方", "ゆうがた", "Sore"],
+        ["季節", "きせつ", "Musim"],
+        ["昨日", "きのう", "Kemarin"],
+        ["明日", "あした", "Besok"],
+        ["食堂", "しょくどう", "Kantin"],
+        ["銀行", "ぎんこう", "Bank"],
+        ["受付", "うけつけ", "Resepsionis"],
+        ["門", "もん", "Pintu gerbang"],
+        ["登ります", "のぼります", "Mendaki"],
+        ["教科書", "きょうかしょ", "Buku panduan"],
+        ["教室", "きょうしつ", "Ruang kelas"],
+        ["参加します", "さんかします", "Berpartisipasi"],
+        ["用意します", "よういします", "Menyiapkan"],
+        ["牛肉", "ぎゅうにく", "Daging sapi"],
+        ["豚肉", "ぶたにく", "Daging babi"],
+        ["皿", "さら", "Piring"],
+        ["お湯", "おゆ", "Air panas"],
+        ["調理方法", "ちょうりほうほう", "Cara memasak"],
+        ["甘い", "あまい", "Manis"],
+        ["辛い", "からい", "Pedas"],
+        ["数字", "すうじ", "Angka, bilangan"],
+        ["机", "つくえ", "Meja"],
+        ["都合", "つごう", "Keadaan"],
+        ["用事", "ようじ", "Keperluan"],
+        ["氏名", "しめい", "Nama lengkap"],
+        ["理由", "りゆう", "Alasan"],
+        ["別に", "べつに", "Beda-beda"],
+        ["連絡先", "れんらくさき", "Alamat yang dapat dihubungi"],
+        ["吸います", "すいます", "Menghisap"],
+        ["取ります", "とります", "Mengambil"],
+        ["伝えます", "つたえます", "Menyampaikan"],
+        ["熱", "ねつ", "Demam"],
+        ["薬", "くすり", "Obat"],
+        ["医者", "いしゃ", "Dokter"],
+        ["～才", "～さい", "Bakat / umur ~"],
+        ["眠い", "ねむい", "Ngantuk"],
+        ["記入します", "きにゅうします", "Mengisi di kertas"],
+        ["顔", "かお", "Wajah"],
+        ["泣きます", "なきます", "Menangis"],
+        ["会計", "かいけい", "Pembayaran"],
+        ["電話番号", "でんわばんごう", "Nomor telepon"],
+        ["牛乳", "ぎゅうにゅう", "Susu sapi"],
+        ["禁煙", "きんえん", "Larangan merokok"],
+        ["自由", "じゆう", "Bebas"],
+        ["切ります", "きります", "Memotong"],
+        ["焼きます", "やきます", "Memanggang"],
+        ["旅館", "りょかん", "Penginapan"],
+        ["遊びます", "あそびます", "Bermain"],
+        ["調べます", "しらべます", "Memeriksa"],
+        ["事故", "じこ", "Kecelakaan"],
+        ["故障", "こしょう", "Kerusakan"],
+        ["指定席", "していせき", "Tempat duduk yang ditetapkan"],
+        ["光ります", "ひかります", "Bercahaya, bersinar"],
+        ["お知らせ", "おしらせ", "Pengumuman"],
+        ["水道", "すいどう", "Ledeng"],
+        ["工事", "こうじ", "Konstruksi"],
+        ["場合", "ばあい", "Kesempatan"],
+        ["条件", "じょうけん", "Syarat-syarat, kondisi"],
+        ["開きます", "ひらきます", "Membuka"],
+        ["生産します", "せいさんします", "Memproduksi"],
+        ["体験", "たいけん", "Percobaan"],
+        ["国際交流", "こくさいこうりゅう", "Pertukaran budaya internasional"],
+        ["申し込みます", "もうしこみます", "Melamar (pekerjaan)"],
+        ["昨年", "さくねん", "Tahun lalu"],
+        ["毎年", "まいとし", "Setiap tahun"],
+        ["袋", "ふくろ", "Kantong plastik"],
+        ["店長", "てんちょう", "Manajer toko"],
+        ["全員", "ぜんいん", "Semuanya"],
+        ["習慣", "しゅうかん", "Kebiasaan"],
+        ["普通", "ふつう", "Biasa"],
+        ["暗い", "くらい", "Gelap"],
+        ["怒ります", "おこります", "Marah"],
+        ["入院します", "にゅういんします", "Masuk rumah sakit"],
+        ["退院します", "たいいんします", "Keluar rumah sakit"],
+        ["急に", "きゅうに", "Tiba-tiba"],
+        ["営業します", "えいぎょうします", "Mengusahakan"],
+        ["案内します", "あんないします", "Memandu"],
+        ["値段", "ねだん", "Harga"],
+        ["価格", "かかく", "Harga"],
+        ["消費税", "しょうひぜい", "Pajak konsumen"],
+        ["税別", "ぜいべつ", "Harga belum termasuk pajak"],
+        ["図書館", "としょかん", "Perpustakaan"],
+        ["開きます", "あきます", "Terbuka"],
+        ["閉まります", "しまります", "Tertutup"],
+        ["利用します", "りようします", "Menggunakan"],
+        ["窓口", "まどぐち", "Pintu jendela"],
+        ["郵便局", "ゆうびんきょく", "Kantor pos"],
+        ["近所", "きんじょ", "Tetangga"],
+        ["自動", "じどう", "Otomatis"],
+        ["危険", "きけん", "Bahaya"],
+        ["～種類", "～しゅるい", "~ macam, jenis"],
+        ["消します", "けします", "Memadamkan"],
+        ["捨てます", "すてます", "Membuang"],
+        ["分けます", "わけます", "Membagi"],
+        ["燃えます", "もえます", "Terbakar"],
+        ["設定します", "せっていします", "Mengeset, menyeting"],
+        ["地震", "じしん", "Gempa"],
+        ["台風", "たいふう", "Angin topan"],
+        ["声", "こえ", "Suara (benda hidup)"],
+        ["大切な", "たいせつな", "Penting"],
+        ["進みます", "すすみます", "Rekomendasi"],
+        ["授業", "じゅぎょう", "Pelajaran"],
+        ["大変な", "たいへんな", "Berat (perasaan)"],
+        ["困ります", "こまります", "Susah"],
+        ["違います", "ちがいます", "Salah, berbeda"],
+        ["慣れます", "なれます", "terbiasa"],
+        ["増えます", "ふえます", "Bertambah"],
+        ["笑います", "わらいます", "Tertawa"],
+        ["苦労します", "くろうします", "Bersakit-sakit (dalam usaha)"],
+        ["希望", "きぼう", "Harapan, keinginan"],
+        ["特に", "とくに", "Terutama"],
+        ["建てます", "たてます", "Mendirikan"],
+        ["続けます", "つづけます", "Melanjutkan"],
+        ["役に立ちます", "やくにたちます", "Bermanfaat"],
+      ];
+
+      /* Bagi rata jadi 6 part sesuai urutan aslinya di PDF */
+      const PART_COUNT = 6;
+      const PART_LABEL = {};
+      (function tagParts() {
+        const base = Math.floor(RAW.length / PART_COUNT);
+        const extra = RAW.length % PART_COUNT; // sisa dibagi ke part-part awal
+        let idx = 0;
+        for (let p = 1; p <= PART_COUNT; p++) {
+          const size = base + (p <= extra ? 1 : 0);
+          const start = idx + 1;
+          for (let i = 0; i < size; i++) {
+            RAW[idx].push("P" + p);
+            idx++;
+          }
+          PART_LABEL["P" + p] = "Part " + p + " (" + start + "–" + idx + ")";
+        }
+      })();
+      const DATA = RAW;
+
+      /* ============ ROMANISASI ============ */
+      const YOUON = {
+        きゃ: "kya",
+        きゅ: "kyu",
+        きょ: "kyo",
+        ぎゃ: "gya",
+        ぎゅ: "gyu",
+        ぎょ: "gyo",
+        しゃ: "sha",
+        しゅ: "shu",
+        しょ: "sho",
+        じゃ: "ja",
+        じゅ: "ju",
+        じょ: "jo",
+        ちゃ: "cha",
+        ちゅ: "chu",
+        ちょ: "cho",
+        ぢゃ: "ja",
+        ぢゅ: "ju",
+        ぢょ: "jo",
+        にゃ: "nya",
+        にゅ: "nyu",
+        にょ: "nyo",
+        ひゃ: "hya",
+        ひゅ: "hyu",
+        ひょ: "hyo",
+        びゃ: "bya",
+        びゅ: "byu",
+        びょ: "byo",
+        ぴゃ: "pya",
+        ぴゅ: "pyu",
+        ぴょ: "pyo",
+        みゃ: "mya",
+        みゅ: "myu",
+        みょ: "myo",
+        りゃ: "rya",
+        りゅ: "ryu",
+        りょ: "ryo",
+      };
+      const SINGLE = {
+        あ: "a",
+        い: "i",
+        う: "u",
+        え: "e",
+        お: "o",
+        か: "ka",
+        き: "ki",
+        く: "ku",
+        け: "ke",
+        こ: "ko",
+        が: "ga",
+        ぎ: "gi",
+        ぐ: "gu",
+        げ: "ge",
+        ご: "go",
+        さ: "sa",
+        し: "shi",
+        す: "su",
+        せ: "se",
+        そ: "so",
+        ざ: "za",
+        じ: "ji",
+        ず: "zu",
+        ぜ: "ze",
+        ぞ: "zo",
+        た: "ta",
+        ち: "chi",
+        つ: "tsu",
+        て: "te",
+        と: "to",
+        だ: "da",
+        ぢ: "ji",
+        づ: "zu",
+        で: "de",
+        ど: "do",
+        な: "na",
+        に: "ni",
+        ぬ: "nu",
+        ね: "ne",
+        の: "no",
+        は: "ha",
+        ひ: "hi",
+        ふ: "fu",
+        へ: "he",
+        ほ: "ho",
+        ば: "ba",
+        び: "bi",
+        ぶ: "bu",
+        べ: "be",
+        ぼ: "bo",
+        ぱ: "pa",
+        ぴ: "pi",
+        ぷ: "pu",
+        ぺ: "pe",
+        ぽ: "po",
+        ま: "ma",
+        み: "mi",
+        む: "mu",
+        め: "me",
+        も: "mo",
+        や: "ya",
+        ゆ: "yu",
+        よ: "yo",
+        ら: "ra",
+        り: "ri",
+        る: "ru",
+        れ: "re",
+        ろ: "ro",
+        わ: "wa",
+        を: "wo",
+        ん: "n",
+        ー: "-",
+      };
+      function kanaToRomaji(kana) {
+        let i = 0,
+          out = "";
+        while (i < kana.length) {
+          const c = kana[i];
+          if (c === "～") {
+            out += "~";
+            i++;
+            continue;
+          }
+          if (c === "っ") {
+            const two = kana.substr(i + 1, 2),
+              one = kana[i + 1];
+            const nextR = YOUON[two] || SINGLE[one] || "";
+            if (nextR) out += nextR[0];
+            i++;
+            continue;
+          }
+          const two = kana.substr(i, 2);
+          if (YOUON[two]) {
+            out += YOUON[two];
+            i += 2;
+            continue;
+          }
+          if (c === "ー") {
+            const m = out.match(/[aiueo](?=[^aiueo]*$)/);
+            if (m) out += m[0];
+            i++;
+            continue;
+          }
+          if (SINGLE[c] !== undefined) {
+            out += SINGLE[c];
+            i++;
+            continue;
+          }
+          out += c;
+          i++;
+        }
+        return out;
+      }
+      function displayHiragana(readingField) {
+        return readingField.split("|").join(" / ");
+      }
+      function displayRomaji(readingField) {
+        return readingField.split("|").map(kanaToRomaji).join(" / ");
+      }
+
+      /* ============ POOL PER PART ============ */
+      const shuffleArr = (arr) => {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      };
+      const POOLS = {};
+      for (let p = 1; p <= PART_COUNT; p++)
+        POOLS["P" + p] = DATA.filter((e) => e[3] === "P" + p);
+      POOLS["ALL"] = DATA.slice();
+      PART_LABEL["ALL"] = "Kanji ALL — semua 613 kosakata";
+      const ALL_UNIVERSE = DATA;
+
+      /* ============ OPSI JAWABAN (anti tebak dari awalan/akhiran) ============ */
+      function affixScore(a, b) {
+        let score = 0;
+        if (a[0] === b[0]) score += 5;
+        let i = a.length - 1,
+          j = b.length - 1,
+          common = 0;
+        while (i >= 0 && j >= 0 && a[i] === b[j]) {
+          common++;
+          i--;
+          j--;
+        }
+        score += Math.min(common, 5);
+        return score;
+      }
+      function getOptions(entry) {
+        const correctDisplay = displayRomaji(entry[1]);
+        const correctPrimary = kanaToRomaji(entry[1].split("|")[0]);
+        const seen = new Set([correctDisplay]);
+        let candidates = [];
+        for (const e of ALL_UNIVERSE) {
+          if (e[0] === entry[0]) continue;
+          const display = displayRomaji(e[1]);
+          if (seen.has(display)) continue;
+          seen.add(display);
+          candidates.push({
+            display,
+            primary: kanaToRomaji(e[1].split("|")[0]),
+          });
+        }
+        const sameFirst = candidates.filter(
+          (c) => c.primary[0] === correctPrimary[0],
+        );
+        let pool = sameFirst.length >= 6 ? sameFirst : candidates;
+        const last2 = correctPrimary.slice(-2),
+          last1 = correctPrimary.slice(-1);
+        let poolSameEnd = pool.filter(
+          (c) => c.primary.length >= 2 && c.primary.endsWith(last2),
+        );
+        if (poolSameEnd.length < 4)
+          poolSameEnd = pool.filter((c) => c.primary.endsWith(last1));
+        if (poolSameEnd.length >= 4) pool = poolSameEnd;
+        const scored = pool.map((c) => ({
+          c,
+          score: affixScore(c.primary, correctPrimary),
+        }));
+        scored.sort((a, b) => b.score - a.score);
+        const top = scored
+          .slice(0, Math.min(15, scored.length))
+          .map((x) => x.c.display);
+        let chosen = shuffleArr(top).slice(0, 3);
+        while (chosen.length < 3) {
+          const rest = candidates
+            .map((c) => c.display)
+            .filter((d) => !chosen.includes(d));
+          if (!rest.length) break;
+          chosen.push(shuffleArr(rest)[0]);
+        }
+        return shuffleArr([correctDisplay, ...chosen]);
+      }
+
+      /* ================= STATE ================= */
+      let activeKey = null;
+      let currentPool = [];
+      let statusArr = [];
+      let order = [];
+      let orderPos = 0;
+      let liveIdx = null;
+      let viewingIdx = null;
+      let round = 1;
+      let orderMode = "random";
+
+      function buildOrder() {
+        return orderMode === "sequential"
+          ? currentPool.map((_, i) => i)
+          : shuffleArr(currentPool.map((_, i) => i));
+      }
+
+      function computeScores() {
+        const ok = statusArr.filter((s) => s && s.status === "correct").length;
+        const no = statusArr.filter((s) => s && s.status === "wrong").length;
+        document.getElementById("scoreOk").textContent = ok;
+        document.getElementById("scoreNo").textContent = no;
+        const answered = statusArr.filter(Boolean).length;
+        document.getElementById("posNum").textContent = answered;
+        document.getElementById("totalNum").textContent = currentPool.length;
+        document.getElementById("progressFill").style.width =
+          (answered / currentPool.length) * 100 + "%";
+      }
+
+      function renderNavGrid() {
+        const grid = document.getElementById("navGrid");
+        grid.innerHTML = "";
+        currentPool.forEach((entry, idx) => {
+          const tile = document.createElement("div");
+          tile.className = "navtile";
+          const st = statusArr[idx];
+          if (st)
+            tile.classList.add(
+              st.status === "correct"
+                ? "correct"
+                : st.status === "wrong"
+                  ? "wrong"
+                  : "skipped",
+            );
+          if (idx === (viewingIdx !== null ? viewingIdx : liveIdx))
+            tile.classList.add("viewing");
+          tile.textContent = entry[0];
+          tile.title = entry[0];
+          tile.addEventListener("click", () => navTileClick(idx));
+          grid.appendChild(tile);
+        });
+      }
+
+      function navTileClick(idx) {
+        if (!statusArr[idx]) {
+          viewingIdx = null;
+          liveIdx = idx;
+          const p = order.indexOf(idx);
+          if (p >= 0) orderPos = p;
+          renderQuestion(idx, true);
+        } else {
+          viewingIdx = idx;
+          renderQuestion(idx, false);
+        }
+        renderNavGrid();
+      }
+
+      function renderQuestion(idx, interactive) {
+        const entry = currentPool[idx];
+        const [kanji] = entry;
+        document.getElementById("kanjiText").textContent = kanji;
+        document
+          .getElementById("cell")
+          .classList.toggle("short", kanji.length >= 4);
+
+        const optWrap = document.getElementById("options");
+        optWrap.innerHTML = "";
+        const explainBox = document.getElementById("explain");
+        const skipBtn = document.getElementById("skipBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const qLabel = document.getElementById("questionLabel");
+
+        if (interactive) {
+          qLabel.style.display = "block";
+          qLabel.textContent = "Bacaannya yang mana?";
+          explainBox.classList.remove("show");
+          skipBtn.style.display = "inline-block";
+          nextBtn.style.display = "none";
+          const opts = getOptions(entry);
+          opts.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "opt";
+            btn.type = "button";
+            btn.innerHTML = `<span class="num">${i + 1}</span><span>${opt}</span>`;
+            btn.addEventListener("click", () => selectOption(idx, opt, btn));
+            optWrap.appendChild(btn);
+          });
+        } else {
+          const st = statusArr[idx];
+          qLabel.style.display = "none";
+          st.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "opt locked";
+            if (opt === displayRomaji(entry[1])) btn.classList.add("correct");
+            else if (opt === st.chosen) btn.classList.add("wrong");
+            else btn.classList.add("dim");
+            btn.innerHTML = `<span class="num">${i + 1}</span><span>${opt}</span>`;
+            optWrap.appendChild(btn);
+          });
+          skipBtn.style.display = "none";
+          nextBtn.style.display = "inline-block";
+          nextBtn.textContent = "Tutup tinjauan →";
+          showExplain(entry, st.status);
+          return;
+        }
+        nextBtn.textContent = "Lanjut →";
+      }
+
+      function lockOptionsUI(entry, chosenLabel) {
+        const correctDisplay = displayRomaji(entry[1]);
+        document.querySelectorAll(".opt").forEach((b) => {
+          b.classList.add("locked");
+          const label = b.querySelector("span:last-child").textContent;
+          if (label === correctDisplay) b.classList.add("correct");
+          else if (label === chosenLabel) b.classList.add("wrong");
+          else b.classList.add("dim");
+        });
+      }
+
+      function selectOption(idx, chosen, btnEl) {
+        if (statusArr[idx]) return;
+        const entry = currentPool[idx];
+        const correct = chosen === displayRomaji(entry[1]);
+        const options = Array.from(document.querySelectorAll(".opt")).map(
+          (b) => b.querySelector("span:last-child").textContent,
+        );
+        lockOptionsUI(entry, chosen);
+        statusArr[idx] = {
+          status: correct ? "correct" : "wrong",
+          options,
+          chosen,
+        };
+        computeScores();
+        renderNavGrid();
+        showExplain(entry, correct ? "correct" : "wrong");
+        document.getElementById("nextBtn").style.display = "inline-block";
+        document.getElementById("skipBtn").style.display = "none";
+      }
+
+      function showExplain(entry, statusKind) {
+        const [kanji, readingField, meaning] = entry;
+        const mainReading = displayHiragana(readingField);
+        const stamp = document.getElementById("stamp");
+        const verdict = document.getElementById("verdictText");
+        if (statusKind === "skipped") {
+          stamp.className = "stamp sk";
+          stamp.textContent = "?";
+          verdict.innerHTML = `<b>${kanji}</b> dibaca <b>${mainReading}</b>, berarti "${meaning}".`;
+        } else if (statusKind === "correct") {
+          stamp.className = "stamp ok";
+          stamp.textContent = "✓";
+          verdict.innerHTML = `Benar! <b>${kanji}</b> dibaca <b>${mainReading}</b>, berarti "${meaning}".`;
+        } else {
+          stamp.className = "stamp no";
+          stamp.textContent = "✕";
+          verdict.innerHTML = `Belum tepat. <b>${kanji}</b> dibaca <b>${mainReading}</b>, berarti "${meaning}".`;
+        }
+        document.getElementById("explain").classList.add("show");
+      }
+
+      document.getElementById("skipBtn").addEventListener("click", () => {
+        const idx = liveIdx;
+        if (statusArr[idx]) return;
+        const entry = currentPool[idx];
+        const options = Array.from(document.querySelectorAll(".opt")).map(
+          (b) => b.querySelector("span:last-child").textContent,
+        );
+        lockOptionsUI(entry, null);
+        statusArr[idx] = { status: "skipped", options, chosen: null };
+        computeScores();
+        renderNavGrid();
+        showExplain(entry, "skipped");
+        document.getElementById("nextBtn").style.display = "inline-block";
+        document.getElementById("skipBtn").style.display = "none";
+      });
+
+      function advanceToNext() {
+        // cari soal berikutnya di urutan saat ini yang BELUM dijawab (soal yang sudah
+        // dijawab lewat klik nav grid, di luar urutan normal, dilewati otomatis)
+        let pos = orderPos;
+        for (let step = 0; step < order.length; step++) {
+          pos++;
+          if (pos >= order.length) break;
+          if (!statusArr[order[pos]]) {
+            orderPos = pos;
+            liveIdx = order[pos];
+            return;
+          }
+        }
+        // kalau sampai sini, semua soal di putaran ini sudah kejawab semua -> mulai
+        // putaran baru dari nol (status direset biar bisa dijawab ulang)
+        statusArr = currentPool.map(() => null);
+        computeScores();
+        order = buildOrder();
+        orderPos = 0;
+        liveIdx = order[0];
+        round++;
+        document.getElementById("roundNum").textContent = round;
+        const toast = document.getElementById("roundToast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        if (viewingIdx !== null) {
+          viewingIdx = null;
+          renderNavGrid();
+          if (statusArr[liveIdx]) renderQuestion(liveIdx, false);
+          else renderQuestion(liveIdx, true);
+          return;
+        }
+        advanceToNext();
+        renderNavGrid();
+        renderQuestion(liveIdx, true);
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (!activeKey) return;
+        round = 1;
+        document.getElementById("roundNum").textContent = round;
+        statusArr = currentPool.map(() => null);
+        order = buildOrder();
+        orderPos = 0;
+        liveIdx = order[0];
+        viewingIdx = null;
+        computeScores();
+        renderNavGrid();
+        renderQuestion(liveIdx, true);
+      });
+
+      document.getElementById("orderToggle").addEventListener("click", () => {
+        orderMode = orderMode === "random" ? "sequential" : "random";
+        const icon = document.querySelector("#orderToggle .icon");
+        const label = document.getElementById("orderToggleLabel");
+        if (orderMode === "random") {
+          icon.textContent = "🔀";
+          label.textContent = "Acak";
+        } else {
+          icon.textContent = "🔢";
+          label.textContent = "Berurutan";
+        }
+        if (!activeKey) return;
+        order = buildOrder();
+        const p = order.indexOf(liveIdx);
+        orderPos = p >= 0 ? p : 0;
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!activeKey) return;
+        const answeredLive = statusArr[liveIdx];
+        if (
+          viewingIdx === null &&
+          !answeredLive &&
+          ["1", "2", "3", "4"].includes(e.key)
+        ) {
+          const idx = parseInt(e.key, 10) - 1;
+          const btns = document.querySelectorAll(".opt");
+          if (btns[idx]) btns[idx].click();
+        } else if (
+          e.key === "Enter" &&
+          document.getElementById("nextBtn").style.display !== "none"
+        ) {
+          document.getElementById("nextBtn").click();
+        }
+      });
+
+      function selectGroup(key) {
+        activeKey = key;
+        currentPool = POOLS[key];
+        statusArr = currentPool.map(() => null);
+        order = buildOrder();
+        orderPos = 0;
+        liveIdx = order[0];
+        viewingIdx = null;
+        round = 1;
+
+        document
+          .querySelectorAll(".group-btn")
+          .forEach((b) => b.classList.toggle("active", b.dataset.key === key));
+        document.getElementById("roundNum").textContent = round;
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("quizBody").style.display = "block";
+        document.getElementById("navWrap").style.display = "block";
+
+        computeScores();
+        renderNavGrid();
+        renderQuestion(liveIdx, true);
+      }
+
+      const groupBar = document.getElementById("groupBar");
+      for (let p = 1; p <= PART_COUNT; p++) {
+        const key = "P" + p;
+        const btn = document.createElement("button");
+        btn.className = "group-btn";
+        btn.dataset.key = key;
+        btn.textContent = "Part " + p;
+        btn.title = PART_LABEL[key];
+        btn.addEventListener("click", () => selectGroup(key));
+        groupBar.appendChild(btn);
+      }
+      (function addAllButton() {
+        const btn = document.createElement("button");
+        btn.className = "group-btn";
+        btn.dataset.key = "ALL";
+        btn.textContent = "Kanji ALL";
+        btn.title = PART_LABEL["ALL"];
+        btn.addEventListener("click", () => selectGroup("ALL"));
+        groupBar.appendChild(btn);
+      })();
+    </script>
+    <!-- ================= TEMPEL JAVASCRIPT POP-UP DI SINI (TEPAT DI ATAS </body>) ================= -->
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const popup = document.getElementById("customPopup");
+        const closeBtn = document.getElementById("closePopupBtn");
+
+        // Tampilkan pop-up saat web dibuka
+        popup.style.display = "flex";
+
+        // Tutup pop-up saat tombol diklik
+        closeBtn.addEventListener("click", () => {
+          popup.style.display = "none";
+        });
+      });
+    </script>
+    <!-- ========================================================================================== -->
+  </body>
+</html>
